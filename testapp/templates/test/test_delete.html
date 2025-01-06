@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load pygmentize %}
+{% load django_bootstrap5 %}
+
+{% block extraheader %}
+<style>{% pygments_css %}</style>
+{% endblock %}
+
+{% block main %}
+<h2>以下の音声テストを削除しますか？{{ test.test_name }}</h2>
+<br>
+<p>制作者：{{ test.created_by.username }}</p>
+<p>テストの説明：{{ test.description }}</p>
+<p>テストの指示内容：{{ test.instruction }}</p>
+<div class="test-date">
+    投稿日：{{ test.created_at|date:"DATETIME_FORMAT" }}
+</div>
+
+<form action="{% url 'test_delete' test.id %}" method="post">
+    {% csrf_token %}
+    {% bootstrap_button button_type="submit" content="削除" %}
+</form>
+<br>
+<a href="{% url 'test_detail' test.id %}" class="btn btn-outline-primary">ホームへ戻る</a>
+
+{% endblock %}

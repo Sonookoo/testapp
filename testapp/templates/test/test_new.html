@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block main %}
+<h2>テストの新規作成</h2>
+<div class="test_instruction">
+    <p>
+        テスト名(必須)と概要、テスト指示(任意)を入力してください。
+        「音声ファイル群」と「それに対応する音響モデル名」も登録してください。
+        音響モデルが複数存在する場合は「音響モデルフォームの追加」を押すとフォームを追加できます。
+    </p>
+</div>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% comment %} MOSテストフォームの配置 {% endcomment %}
+    {% bootstrap_form mos_form %}
+
+    <button type="button" id="add-form" class="btn btn-outline-primary">音響モデルフォームの追加</button>
+
+    {% comment %} 以下にフォームを追加する {% endcomment %}
+    <div id="form-set" name="form-set">
+        <div class="form-row" id="form-0}">
+            <p>音声ファイル（複数選択可能）: <input type="file" multiple name="form-0_audios" value="" required></p>
+            <p>音響モデル名：<input type="text" name="form-0_model_name" value="" required></p>
+            <p>テキスト：<input type="text" name="form-0_text" value=""></p>
+        </div>
+    </div>
+
+    {% comment %} 以下にVeiws.pyに送信するJS変数を追加する {% endcomment %}
+    <div id="js-value">
+        <input type="hidden" id="js-value_formcount" name="js-value_formcount" value="1">
+    </div>
+
+    {% bootstrap_button button_type="submit" content="テストを作成する" %}
+</form>
+
+
+<script>
+    
+    document.getElementById('add-form').addEventListener('click', function() {
+
+        const formset = document.getElementById('form-set');
+        const formCount = formset.getElementsByClassName('form-row').length;
+        
+        fetchNewForm(formCount);
+
+        document.getElementById('js-value_formcount').value = formCount+1;
+
+    });
+
+    // サブ関数
+    function fetchNewForm(index) {
+        fetch('/tests/get_new_form/?prefix=' + index)  // 新しいフォームを取得するエンドポイントを指定
+            .then(response => response.text())
+            .then(data => {
+                const formset = document.getElementById('form-set');
+                const newForm = document.createElement('div');
+                newForm.innerHTML = data.replace(/__prefix__/g, index);
+                newForm.class = 'form-row';
+                formset.appendChild(newForm);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+
+{% endblock %}

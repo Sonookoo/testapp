@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class="container">
+    <div class="welcome">
+    <h1>音声テストポータルへようこそ!</h1>
+    <p>音声の主観評価にご協力お願いいたします！</p>
+    <a class="btn btn-primary" href="{% url 'test_new' %}">音声テストを新規作成する</a>
+    <br>
+    ※テストを受ける、新規作成するにはアカウント登録が必要です。新規の方は画面右上の「アカウント作成」からアカウントを作成、アカウントをお持ちの方はログインをしてください。
+</div>
+
+<h2>音声テスト一覧</h2>
+{% if tests %}
+
+<table class="table">
+    <thred>
+    <tr>
+        <th>音声テスト名</th>
+        <th>投稿者</th>
+        <th>投稿日</th>
+        <th></th>
+        <th></th>
+    </tr>
+    </thred>
+    <tbody>
+    {% for test in tests %}
+    <tr>
+        <th><a href="{% url 'test_detail' test.id %}">{{ test.test_name }}</a></th>
+        <th>{{ test.created_by.username }}</th>
+        <th>{{ test.created_at }}</th>
+        {% if user.is_authenticated and user == test.created_by %}
+        <th><a href="{% url 'test_delete' test.id %}" class="btn btn-outline-primary">削除する</a></th>
+        <th><a href="{% url 'result' test.id %}" class="btn btn-outline-primary">結果を表示する</a></th>
+        {% endif %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>公開されているテストはありません。</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,7 @@
+django
+django-bootstrap5
+django-pygments-renderer
+django-boost
+django-cleanup
+numpy
+scipy

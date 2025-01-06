@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load pygmentize %}
+{% load django_bootstrap5 %}
+
+{% block main %}
+<h2>{{ test.test_name }} テスト結果確認</h2>
+<hr>
+
+<p>テスト参加人数：{{ num_of_subjects }}</p>
+<p>回答された総音声数：{{ num_of_answers }}</p>
+<hr>
+
+<table class="table table-striped table table-bordered ">
+    <thead>
+        <tr>
+            <th>音響モデル名</th>
+            <th>MOS</th>
+        </tr>
+    </thead>
+    <tbody align="center">
+    {% for key, value in result_dict.items %}
+        <tr>
+            <th>{{ key }}</th>
+            <th>{{ value.string }}</th>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% if p_value %}
+<hr>
+<p>Wilcoxonの順位和検定</p>
+<table class="table table-striped table table-bordered ">
+<thead>
+    <tr>
+        <th>音響モデル名</th>
+        <th>p-value</th>
+    </tr>
+</thead>
+<tbody align="center">
+    {% for key, value in p_value.items %}
+        <tr>
+            <th>{{ key }}</th>
+            <th>{{ value }}</th>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if comments %}
+<hr>
+<table class="table">
+    <thred>
+    <tr>
+        <th>ユーザー名</th>
+        <th>コメント</th>
+    </tr>
+    </thred>
+    <tbody>
+    {% for com in comments %}
+    <tr>
+        <th>{{ com.created_by.username }}</th>
+        <th>{{ com.comment }}</th>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>コメントはありません。</p>
+{% endif %}
+
+{% endblock main %}
