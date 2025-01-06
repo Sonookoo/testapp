@@ -12,7 +12,7 @@ from django.db.models import Avg, Count
 from testapp.models import Acoustic, MosTest
 import numpy as np 
 from scipy import stats
-from scipy.stats import wilcoxon, shapiro
+from scipy.stats import wilcoxon, shapiro, friedmanchisquare
 
 # Create your views here.
 @login_required
@@ -87,7 +87,7 @@ def result(request, test_id):
         data_list = np.array(data_list)
         #1. データの分散、平均など必要なデータを求める
         size = len(data_list)
-        if size == 0:
+        if size <= 1:
             return
         
         data_ave = sum(data_list)/size
@@ -95,8 +95,11 @@ def result(request, test_id):
         
         #2. t分布を用いてデータの信頼区間を求める
         #データの平均からの誤差を算出し、信頼区間の上限値、下限値を求める
-        data_t = stats.t.ppf(0.975, size-1)
-        error = data_t*np.sqrt(data_var/size)
+        # 信頼区間の計算
+        confidence = 0.95
+        interval = stats.t.interval(confidence, size, loc=data_ave, scale=data_var)
+        error = interval[1] - data_ave
+
 
         #3. データの正規性を検定する
         stat, p_value = shapiro(data_list)
@@ -149,12 +152,13 @@ def result(request, test_id):
         "result_dict": result_dict,
         "p_value": None,
         "comments": comments,
+        "friedmanchisquare": None
     }
 
     p_value_dict = dict()
     for m1, m2 in itertools.combinations(range(len(mos_list)), 2):
 
-        # Wilcoxonの順位和検定
+        # ウィルコクソンの符号順位検定
         statistic, p_value = wilcoxon(mos_list[m1], mos_list[m2])
 
         # 結果の出力
@@ -162,7 +166,10 @@ def result(request, test_id):
         print("p値:", p_value)
 
         p_value_dict[f"model_({m1}, {m2})"] = f"{p_value:.3f}"
-
     context["p_value"] = p_value_dict
+
+    if num_of_models >= 3:
+        statistic, p_value = friedmanchisquare(*mos_list)
+        context["friedmanchisquare"] = p_value
 
     return render(request, 'answer/result.html', context=context)

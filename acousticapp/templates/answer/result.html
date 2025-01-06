@@ -29,7 +29,7 @@
 
 {% if p_value %}
 <hr>
-<p>Wilcoxonの順位和検定</p>
+<p>ウィルコクソンの符号順位検定</p>
 <table class="table table-striped table table-bordered ">
 <thead>
     <tr>
@@ -46,6 +46,12 @@
     {% endfor %}
     </tbody>
 </table>
+{% endif %}
+
+{% if friedmanchisquare.size > 0 %}
+<hr>
+<p>friedmanchisquare検定</p>
+<p>{{ friedmanchisquare }}</p>
 {% endif %}
 
 {% if comments %}

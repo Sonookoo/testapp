@@ -16,7 +16,13 @@
         <ul class="navbar-nav mr-md-2">
             {% if user.is_authenticated %}
             <li class="nav-item"><div class="nav-link">こんにちは {{ user.username }} さん</div></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">ログアウト</a></li>
+            <li class="nav-item">
+                <form action='{% url "logout" %}' method='post' name='logout'>
+                    {% csrf_token %}
+                    <a class="nav-link" href="javascript:logout.submit()">ログアウト</a>
+                </form>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'test_new' %}">音声テストを新規作成する</a></li>
             {% else %}
             <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">ログイン</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">アカウント作成</a></li>
