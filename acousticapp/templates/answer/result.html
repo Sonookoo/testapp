@@ -15,6 +15,7 @@
         <tr>
             <th>音響モデル名</th>
             <th>MOS</th>
+            <th>正規性</th>
         </tr>
     </thead>
     <tbody align="center">
@@ -22,6 +23,7 @@
         <tr>
             <th>{{ key }}</th>
             <th>{{ value.string }}</th>
+            <th>{{ value.is_norm }}</th>
         </tr>
     {% endfor %}
     </tbody>
