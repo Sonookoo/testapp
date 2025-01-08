@@ -58,30 +58,45 @@ def test_delete(request, test_id):
 @login_required
 @require_http_methods(["GET", "POST", "HEAD"])
 def test_new(request):
+
+    mos_form = MosTestForm()
+    context = {
+        'error': False,
+        'mos_form': mos_form
+    }
+
     if request.method == 'POST':
         # MosTest モデルのデータを受け取る
         mos_test_form = MosTestForm(request.POST)
-        if mos_test_form.is_valid():
-            mos_test = mos_test_form.save(commit=False)
-            mos_test.created_by = request.user
-            mos_test.save()
+        mos_test = mos_test_form.save(commit=False)
 
         # Acostic モデルのデータを受け取る
         form_length = int(request.POST.get('js-value_formcount'))
         for prefix in range(form_length):
             model_name = request.POST.get(f"form-{prefix}_model_name")
-            text = request.POST.get(f"form-{prefix}_text")
-            for audio in request.FILES.getlist(f"form-{prefix}_audios"):
+            texts = request.POST.get(f"form-{prefix}_text")
+            audios_list = request.FILES.getlist(f"form-{prefix}_audios")
+            texts_list = texts.splitlines()
+
+            if len(texts_list) == len(audios_list) and mos_test_form.is_valid():
+                mos_test.created_by = request.user
+                mos_test.save()
+            else:
+                context['error'] = True
+                context['mos_form'] = mos_form
+                return render(request, 'test/test_new.html', context)
+
+            for audio, text in zip(audios_list, texts_list):
                 Acoustic.objects.create(
                     mos_test=mos_test,
                     acoustic_model_name=model_name,
                     audio=audio,
-                    text=text)
+                    text=text
+                )
+                
         return redirect('top')
-    else:
-        mos_form = MosTestForm()
     
-    return render(request, 'test/test_new.html', {'mos_form': mos_form})
+    return render(request, 'test/test_new.html', context)
 
 
 @login_required

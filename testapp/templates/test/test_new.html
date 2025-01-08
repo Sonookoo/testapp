@@ -19,11 +19,12 @@
     <button type="button" id="add-form" class="btn btn-outline-primary">音声フォームの追加</button>
 
     {% comment %} 以下にフォームを追加する {% endcomment %}
+    <hr>
     <div id="form-set" name="form-set">
         <div class="form-row" id="form-0">
-            <p>音声ファイル： <input type="file" multiple name="form-0_audios" value="" required></p>
+            <p>音声ファイル(複数指定可能)： <input type="file" multiple name="form-0_audios" value="" required></p>
             <p>音響モデル名：<input type="text" name="form-0_model_name" value="" required></p>
-            <p>テキスト：<input type="text" name="form-0_text" value=""></p>
+            <p>トランスクリプト(複数指定の場合は改行で区切る)：<textarea type="text" name="form-0_text" value=""></textarea></p>
         </div>
     </div>
 
@@ -65,5 +66,11 @@
             });
     }
 </script>
+
+{% if error %}
+<script type="text/javascript">
+    alert('入力エラーがあるみたいです...');
+</script>
+{% endif %}
 
 {% endblock %}

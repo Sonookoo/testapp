@@ -23,4 +23,4 @@ class Acoustic(models.Model):
     mos_test = models.ForeignKey(to=MosTest, on_delete=models.CASCADE)
     acoustic_model_name = models.CharField(verbose_name="音響モデル名", max_length=100)
     audio = models.FileField(upload_to=user_directory_path)
-    text = models.CharField(verbose_name="テキスト", max_length=100)
+    text = models.TextField(verbose_name="トランスクリプト(複数ファイルの場合、改行文字で区切る)", blank=True, null=True)
