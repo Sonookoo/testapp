@@ -13,7 +13,7 @@
     投稿日：{{ test.created_at|date:"DATETIME_FORMAT" }}
 </div>
 <br>
-<p>テストの説明：{{ test.description }}</p>
+<p>テストの説明：{{ test.description | linebreaksbr }}</p>
 
 {% if user.is_authenticated and test.created_by_id == user.id %}
 <a href="{% url 'test_edit' test.id %}" class="btn btn-outline-primary">編集</a>
