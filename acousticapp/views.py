@@ -103,7 +103,7 @@ def result(request, test_id):
         #3. データの正規性を検定する
         stat, p_value = shapiro(scores)
         is_norm = "false"
-        if p_value < 0.05:
+        if p_value > 0.05:
             is_norm = "true"
 
         rtn_dict = {
@@ -111,7 +111,7 @@ def result(request, test_id):
             "average": mean_score,
             "error": margin_of_error,
             "string": f"{mean_score:.2f} ± {margin_of_error:.2f}",
-            "is_norm": is_norm,
+            "is_norm": f"{stat:.3f}, {is_norm}",
         }
 
         return rtn_dict
