@@ -70,11 +70,10 @@ def answer_new(request, test_id):
             comment.created_by = request.user
             comment.test = test
             comment.save()
-                
+
         return redirect("top")
     else:
         return render(request, 'answer/answer_new.html', context)
-    
 
 
 @login_required
@@ -103,15 +102,15 @@ def result(request, test_id):
 
         #3. データの正規性を検定する
         stat, p_value = shapiro(scores)
-        is_norm = "true"
+        is_norm = "false"
         if p_value < 0.05:
-            is_norm = "false"  
+            is_norm = "true"
 
         rtn_dict = {
-            "count": n, 
-            "average": mean_score,  
+            "count": n,
+            "average": mean_score,
             "error": margin_of_error,
-            "string": f"{mean_score:.2f} ± {margin_of_errpr:.2f}",
+            "string": f"{mean_score:.2f} ± {margin_of_error:.2f}",
             "is_norm": is_norm,
         }
 
