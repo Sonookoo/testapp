@@ -82,37 +82,36 @@ def answer_new(request, test_id):
 def result(request, test_id):
     """テストの回答を集計して結果を表示する"""
 
-    def get_stats(data_list):
+    def get_stats(scores):
         """統計量を計算するサブ関数"""
-        data_list = np.array(data_list)
         #1. データの分散、平均など必要なデータを求める
-        size = len(data_list)
-        if size <= 1:
+        n = len(scores)
+        if n <= 1:
             return
-        
-        data_ave = sum(data_list)/size
-        data_var = sum((data_list-data_ave)**2)/(size-1)
-        
+
+        mean_score = np.mean(scores)
+        std_dev = np.std(scores, ddof=1)
+        sem = std_dev / np.sqrt(n)
+
         #2. t分布を用いてデータの信頼区間を求める
-        #データの平均からの誤差を算出し、信頼区間の上限値、下限値を求める
+        # データの平均からの誤差を算出し、信頼区間の上限値、下限値を求める
         # 信頼区間の計算
         confidence = 0.95
-        interval = stats.t.interval(confidence, size, loc=data_ave, scale=data_var)
-        error = interval[1] - data_ave
-
+        df = n - 1
+        t_value = stats.t.ppf((1 + confidence) / 2, df)
+        margin_of_error = t_value * sem
 
         #3. データの正規性を検定する
-        stat, p_value = shapiro(data_list)
+        stat, p_value = shapiro(scores)
         is_norm = "true"
         if p_value < 0.05:
             is_norm = "false"  
 
         rtn_dict = {
-            "count": size, 
-            "average": data_ave, 
-            "variance": data_var, 
-            "error": error,
-            "string": f"{data_ave:.2f} ± {error:.2f}",
+            "count": n, 
+            "average": mean_score,  
+            "error": margin_of_error,
+            "string": f"{mean_score:.2f} ± {margin_of_errpr:.2f}",
             "is_norm": is_norm,
         }
 
